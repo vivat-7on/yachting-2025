@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Yachting Memories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="page-header">
+    <div class="header-inner">
+        <h1 class="site-title">Yachting Memories</h1>
+        <p class="site-subtitle">Aegean Sea · 2025</p>
+    </div>
+</header>
+
+<main class="page-main">
+    <section class="gallery-section">
+        <div class="gallery" id="gallery"></div>
+    </section>
+</main>
+
+<div class="lightbox" id="lightbox">
+    <button class="lightbox__close" id="lightboxClose" aria-label="Закрыть">×</button>
+    <img class="lightbox__image" id="lightboxImage" alt="">
+</div>
+
+<script>
+    // ---- НАСТРОЙКИ ----
+    const PHOTO_COUNT = 50; // <-- тут меняешь количество фото
+    const PHOTO_PATH_PREFIX = 'photos/';
+    const PHOTO_EXTENSION = '.jpg';
+
+    const galleryElement = document.getElementById('gallery');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxClose = document.getElementById('lightboxClose');
+
+    function padNumber(num) {
+        return String(num).padStart(2, '0');
+    }
+
+    function createGallery() {
+        for (let i = 1; i <= PHOTO_COUNT; i++) {
+            const fileName = padNumber(i) + PHOTO_EXTENSION;
+            const src = PHOTO_PATH_PREFIX + fileName;
+
+            const item = document.createElement('button');
+            item.className = 'gallery-item';
+            item.type = 'button';
+            item.setAttribute('data-src', src);
+
+            const img = document.createElement('img');
+            img.src = src;
+            img.loading = 'lazy';
+            img.alt = 'Yachting photo ' + i;
+
+            item.appendChild(img);
+            galleryElement.appendChild(item);
+        }
+    }
+
+    function openLightbox(src) {
+        lightboxImage.src = src;
+        lightbox.classList.add('lightbox--visible');
+        document.body.classList.add('no-scroll');
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('lightbox--visible');
+        document.body.classList.remove('no-scroll');
+        lightboxImage.src = '';
+    }
+
+    galleryElement.addEventListener('click', (event) => {
+        const button = event.target.closest('.gallery-item');
+        if (!button) return;
+        const src = button.getAttribute('data-src');
+        if (src) openLightbox(src);
+    });
+
+    lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox) {
+            closeLightbox();
+        }
+    });
+
+    lightboxClose.addEventListener('click', () => {
+        closeLightbox();
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+
+    createGallery();
+</script>
+</body>
+</html>
